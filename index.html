@@ -1,44 +1,148 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>I love you</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>For Kera</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;1,500;1,700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#14060d;--ink:#ffe9ef;--rose:#ff5c7a;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#14060d;--ink:#ffe9ef;--rose:#ff5c7a}}
+:root[data-theme="dark"]{--bg:#14060d;--ink:#ffe9ef;--rose:#ff5c7a}
+html,body{height:100%;margin:0}
+body{background:var(--bg);color:var(--ink);font-family:'Cormorant Garamond',Georgia,serif;overflow:hidden;cursor:pointer;-webkit-tap-highlight-color:transparent;user-select:none}
+#bg{position:fixed;inset:0;width:100%;height:100%}
+#stage{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px;pointer-events:none}
+#line{font-size:clamp(34px,8vw,64px);line-height:1.1;max-width:13em;font-weight:600;font-style:italic;text-shadow:0 2px 30px rgba(20,6,13,.9)}
+#sig{font-size:clamp(24px,5vw,38px);font-style:italic;margin-top:18px;opacity:0;text-shadow:0 2px 20px rgba(20,6,13,.9)}
+#hint{position:fixed;left:0;right:0;bottom:calc(28px + env(safe-area-inset-bottom,0px));text-align:center;font-size:17px;font-style:italic;opacity:.65}
+#lilies{position:fixed;inset:0;overflow:hidden;pointer-events:none}
+.lily{position:absolute;width:var(--s);height:var(--s);transform:rotate(var(--r));opacity:.6;animation:sway 9s ease-in-out infinite;filter:drop-shadow(0 6px 24px rgba(255,92,122,.25))}
+@keyframes sway{50%{transform:rotate(calc(var(--r) + 5deg)) translateY(-6px)}}
+@media (prefers-reduced-motion:reduce){.lily{animation:none}}
+</style>
 </head>
-<body style="margin:0;padding:0;background-color:#1a0f14;">
-<table width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#1a0f14">
-  <tr><td align="center" style="padding:24px 12px;">
+<body>
+<div id="lilies">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<linearGradient id="pg" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="0" y2="-96"><stop offset="0" stop-color="#ff8fa8"/><stop offset=".45" stop-color="#ffd1dc"/><stop offset="1" stop-color="#fff6f8"/></linearGradient>
+<g id="pt"><path d="M0 0C24-30 24-70 0-96C-24-70-24-30 0 0Z" fill="url(#pg)"/><path d="M0-8V-72" stroke="#e0527a" stroke-opacity=".45" stroke-width="2.5" stroke-linecap="round"/></g>
+<g id="sm"><path d="M0 0V-38" stroke="#f7c873" stroke-width="2" stroke-linecap="round"/><circle cy="-38" r="4" fill="#d98324"/></g>
+<symbol id="lily" viewBox="-100 -100 200 200">
+<use href="#pt" transform="rotate(60)" opacity=".75"/><use href="#pt" transform="rotate(180)" opacity=".75"/><use href="#pt" transform="rotate(300)" opacity=".75"/>
+<use href="#pt"/><use href="#pt" transform="rotate(120)"/><use href="#pt" transform="rotate(240)"/>
+<use href="#sm" transform="rotate(20)"/><use href="#sm" transform="rotate(80)"/><use href="#sm" transform="rotate(140)"/><use href="#sm" transform="rotate(200)"/><use href="#sm" transform="rotate(260)"/><use href="#sm" transform="rotate(320)"/>
+<circle r="5" fill="#c7e08a"/>
+</symbol></defs></svg>
+<svg class="lily" viewBox="-100 -100 200 200" style="--s:clamp(190px,42vw,440px);--r:-14deg;left:-9vw;top:-7vh"><use href="#lily"/></svg>
+<svg class="lily" viewBox="-100 -100 200 200" style="--s:clamp(220px,48vw,520px);--r:12deg;right:-12vw;bottom:-9vh;animation-delay:-3s"><use href="#lily"/></svg>
+<svg class="lily" viewBox="-100 -100 200 200" style="--s:clamp(110px,22vw,230px);--r:22deg;right:7vw;top:9vh;opacity:.4;animation-delay:-5s"><use href="#lily"/></svg>
+<svg class="lily" viewBox="-100 -100 200 200" style="--s:clamp(120px,24vw,260px);--r:-25deg;left:3vw;bottom:14vh;opacity:.4;animation-delay:-7s"><use href="#lily"/></svg>
+</div>
+<canvas id="bg"></canvas>
+<div id="stage"><div id="line">A little something<br>for Kera</div><div id="sig">from Lumique</div></div>
+<div id="hint">tap to open</div>
 
-    <table width="480" cellpadding="0" cellspacing="0" border="0" bgcolor="#c9184a"
-      style="width:100%;max-width:480px;background-color:#c9184a;background-image:linear-gradient(160deg,#ff4d6d 0%,#c9184a 55%,#590d22 100%);">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+<script>
+// Edit these lines to say what you want. Keep 'FINAL' last.
+const LINES=[
+ "Hey Kera.",
+ "I made you something.",
+ "Not for a special day.",
+ "Just because you’re special to me.",
+ "You make ordinary days feel golden.",
+ "You’re my favourite person to talk to,",
+ "and my favourite person to be with.",
+ "So I’ll say it properly, Kera.",
+ "FINAL"
+];
 
-      <!-- Tag -->
-      <tr><td style="padding:40px 32px 0 32px;font-family:Arial,Helvetica,sans-serif;font-size:12px;letter-spacing:4px;text-transform:uppercase;color:#ffe3ea;">
-        A little something for you
-      </td></tr>
+const cv=document.getElementById('bg');
+const R=new THREE.WebGLRenderer({canvas:cv,antialias:true,alpha:true});
+R.setPixelRatio(Math.min(devicePixelRatio,2));
+const S=new THREE.Scene(),C=new THREE.PerspectiveCamera(60,1,.1,100);C.position.z=28;
 
-      <!-- Headline -->
-      <tr><td style="padding:110px 32px 110px 32px;font-family:Georgia,'Times New Roman',serif;font-size:84px;line-height:78px;font-weight:bold;text-transform:uppercase;color:#fff0f3;">
-        I <span style="font-style:italic;color:#ffd6e0;">love</span><br>you
-      </td></tr>
+// Particle heart
+const N=7000,pos=new Float32Array(N*3);
+for(let i=0;i<N;i++){
+  const t=Math.random()*Math.PI*2,r=Math.sqrt(Math.random());
+  const x=16*Math.pow(Math.sin(t),3);
+  const y=13*Math.cos(t)-5*Math.cos(2*t)-2*Math.cos(3*t)-Math.cos(4*t);
+  pos[i*3]=x*r;pos[i*3+1]=y*r+1;pos[i*3+2]=(Math.random()-.5)*9*r;
+}
+const geo=new THREE.BufferGeometry();
+geo.setAttribute('position',new THREE.BufferAttribute(pos,3));
+const heart=new THREE.Points(geo,new THREE.PointsMaterial({color:0xff5c7a,size:.17,transparent:true,opacity:.8,blending:THREE.AdditiveBlending,depthWrite:false}));
+S.add(heart);
+const H0=pos.slice(),D=new Float32Array(N).map(()=>Math.random());
+let T=null,lm=0,showName=false,back=null,nameShape;const M={v:0};
 
-      <!-- Footer -->
-      <tr><td style="padding:0 32px 40px 32px;">
-        <table width="100%" cellpadding="0" cellspacing="0" border="0">
-          <tr>
-            <td style="border-top:1px solid #ffb3c3;padding-top:14px;font-family:Arial,Helvetica,sans-serif;font-size:13px;letter-spacing:2px;text-transform:uppercase;color:#fff0f3;">
-              Always
-            </td>
-            <td align="right" style="border-top:1px solid #ffb3c3;padding-top:10px;font-family:Georgia,'Times New Roman',serif;font-style:italic;font-size:26px;color:#fff0f3;">
-              from Lumique
-            </td>
-          </tr>
-        </table>
-      </td></tr>
+function rs(){const w=innerWidth,h=innerHeight;R.setSize(w,h,false);C.aspect=w/h;C.updateProjectionMatrix();}
+addEventListener('resize',rs);rs();
 
-    </table>
+let mx=0,my=0;const P={v:0};
+const still=matchMedia('(prefers-reduced-motion: reduce)').matches;
+addEventListener('pointermove',e=>{mx=e.clientX/innerWidth-.5;my=e.clientY/innerHeight-.5;});
+const clock=new THREE.Clock();
+(function loop(){
+  requestAnimationFrame(loop);
+  const t=clock.getElapsedTime();
+  const f=Math.min(.75,C.aspect*.85),b=1+.05*Math.sin(t*2.4)+P.v*.22;
+  heart.scale.setScalar(f*b);
+  const k=1-M.v;
+  heart.rotation.y=(still?0:(t*.25)%6.2832)*k+mx*.7*k;
+  heart.rotation.x+=(my*.35*k-heart.rotation.x)*.05;
+  if(T&&M.v!==lm){lm=M.v;for(let n=0;n<N;n++){const m=Math.min(1,Math.max(0,M.v*1.5-D[n]*.5)),s=m*m*(3-2*m);for(let a=0;a<3;a++){const j=n*3+a;pos[j]=H0[j]+(T[j]-H0[j])*s;}}geo.attributes.position.needsUpdate=true;}
+  R.render(S,C);
+})();
 
-  </td></tr>
-</table>
+// Story
+const L=document.getElementById('line'),G=document.getElementById('sig'),H=document.getElementById('hint');
+const heartShape=confetti.shapeFromText?confetti.shapeFromText({text:'❤️',scalar:2}):'circle';
+let i=-1,busy=false;
+
+function love(){
+  gsap.fromTo(P,{v:1.6},{v:0,duration:1.5,ease:'power2.out'});
+  confetti({particleCount:70,spread:85,origin:{y:.65},shapes:[heartShape,heartShape,nameShape||heartShape],scalar:2,colors:['#ff5c7a','#ffe9ef','#c9184a']});
+}
+function show(html,big){L.innerHTML=html;L.style.fontSize=big?'clamp(64px,19vw,150px)':'';}
+function next(){
+  if(busy)return;busy=true;
+  if(i>=LINES.length-1){afterFinal();busy=false;return;}
+  i++;
+  const fin=LINES[i]==='FINAL';
+  const tl=gsap.timeline({onComplete:()=>{busy=false;}});
+  tl.to(L,{opacity:0,y:-16,duration:.3,onComplete:()=>show(fin?'I love you':LINES[i],fin)})
+    .fromTo(L,{y:16,opacity:0},{y:0,opacity:1,duration:.8,ease:'power3.out'});
+  H.textContent=fin?'tap for more':'tap to continue';
+  gsap.fromTo(P,{v:1},{v:0,duration:1.2,ease:'power2.out'});
+  if(fin){tl.to(G,{opacity:1,duration:1.2},'-=.3');buildName().then(()=>{nameShape=confetti.shapeFromText?confetti.shapeFromText({text:'Kera',scalar:3,fontFamily:'"Cormorant Garamond",Georgia,serif',color:'#ffe9ef'}):undefined;love();});}
+}
+// Sample the name into particle targets
+async function buildName(){
+  try{await document.fonts.load('italic 700 230px "Cormorant Garamond"');}catch(e){}
+  const c=document.createElement('canvas');c.width=600;c.height=200;
+  const x=c.getContext('2d');x.fillStyle='#fff';x.font='italic 700 230px "Cormorant Garamond",Georgia,serif';
+  x.textAlign='center';x.textBaseline='middle';x.fillText('Kera',300,100);
+  const d=x.getImageData(0,0,600,200).data,pts=[];
+  for(let p=0;p<d.length;p+=4)if(d[p+3]>128){const q=p/4;pts.push([q%600,(q/600)|0]);}
+  if(!pts.length)return;
+  const A=new Float32Array(N*3);
+  for(let n=0;n<N;n++){const q=pts[(Math.random()*pts.length)|0];A[n*3]=(q[0]-300)/600*30;A[n*3+1]=-(q[1]-100)/600*30+1;A[n*3+2]=(Math.random()-.5)*2;}
+  T=A;
+}
+// Taps after the finale: hearts burst and the heart particles spell the name, then return
+function afterFinal(){
+  love();
+  if(!T)return;
+  if(!showName){showName=true;gsap.to(M,{v:1,duration:1.8,ease:'power3.inOut'});gsap.to([L,G],{opacity:.08,duration:.8});}
+  if(back)back.kill();
+  back=gsap.delayedCall(4.5,()=>{showName=false;gsap.to(M,{v:0,duration:1.8,ease:'power3.inOut'});gsap.to([L,G],{opacity:1,duration:1});});
+}
+document.body.addEventListener('pointerdown',next);
+</script>
 </body>
 </html>
